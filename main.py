@@ -276,3 +276,100 @@ class XmlHandler:
             raise ShopError(f"Файл {filename} не найден.")
         except ET.ParseError:
             raise ShopError(f"Ошибка парсинга XML файла {filename}.")
+
+# ==========================================
+# 5. ПОЛЬЗОВАТЕЛЬСКИЙ ИНТЕРФЕЙС (APP)
+# ==========================================
+
+class App:
+    """Главный класс приложения (консольное меню)."""
+    def __init__(self) -> None:
+        self.inventory = Inventory()
+
+    def run(self) -> None:
+        while True:
+            print("\n--- МУЗЫКАЛЬНЫЙ МАГАЗИН ---")
+            print("1. Показать все инструменты")
+            print("2. Добавить гитару")
+            print("3. Добавить покупателя")
+            print("4. Создать заказ")
+            print("5. Сохранить в JSON")
+            print("6. Загрузить из JSON")
+            print("7. Сохранить в XML")
+            print("8. Загрузить из XML")
+            print("0. Выход")
+            
+            choice = input("Выберите действие: ")
+            
+            try:
+                if choice == "1":
+                    if not self.inventory.instruments:
+                        print("Склад пуст.")
+                    for inv in self.inventory.instruments.values():
+                        print(f"[{inv.instrument_id}] {inv.get_type()} - {inv.name} ({inv.brand}) - {inv.price} руб.")
+                
+                elif choice == "2":
+                    inv_id = int(input("ID инструмента: "))
+                    name = input("Название: ")
+                    brand = input("Бренд: ")
+                    price = float(input("Цена: "))
+                    strings = int(input("Количество струн: "))
+                    self.inventory.add_instrument(Guitar(inv_id, name, brand, price, strings))
+                    print("Гитара добавлена!")
+                
+                elif choice == "3":
+                    c_id = int(input("ID покупателя: "))
+                    name = input("Имя: ")
+                    email = input("Email: ")
+                    phone = input("Телефон: ")
+                    self.inventory.add_customer(Customer(c_id, name, email, phone))
+                    print("Покупатель добавлен!")
+                
+                elif choice == "4":
+                    order_id = int(input("ID заказа: "))
+                    cust_id = int(input("ID покупателя: "))
+                    if cust_id not in self.inventory.customers:
+                        raise ItemNotFoundError("Покупатель не найден!")
+                    
+                    order = Order(order_id, self.inventory.customers[cust_id])
+                    inv_id = int(input("ID инструмента для добавления в заказ: "))
+                    order.add_instrument(self.inventory.get_instrument(inv_id))
+                    
+                    self.inventory.create_order(order)
+                    print(f"Заказ создан! Сумма: {order.get_total_price()} руб.")
+                
+                elif choice == "5":
+                    JsonHandler.save(self.inventory)
+                    print("Сохранено в data.json")
+                
+                elif choice == "6":
+                    JsonHandler.load(self.inventory)
+                    print("Загружено из data.json")
+                
+                elif choice == "7":
+                    XmlHandler.save(self.inventory)
+                    print("Сохранено в data.xml")
+                
+                elif choice == "8":
+                    XmlHandler.load(self.inventory)
+                    print("Загружено из data.xml")
+
+                elif choice == "0":
+                    print("До свидания!")
+                    break
+                
+                else:
+                    print("Неверная команда.")
+
+            # Обработка кастомных исключений
+            except ShopError as e:
+                print(f"Ошибка магазина: {e}")
+            except ValueError:
+                print("Ошибка ввода: пожалуйста, введите число, где это требуется.")
+            except Exception as e:
+                print(f"Непредвиденная ошибка: {e}")
+
+
+if __name__ == "__main__":
+    app = App()
+    app.run()

@@ -1,0 +1,100 @@
+{
+    "instruments": [
+        {
+            "type": "Guitar",
+            "instrument_id": 1,
+            "name": "SR300E",
+            "brand": "Ibanez",
+            "price": 15000.0,
+            "strings_count": 4
+        },
+        {
+            "type": "Guitar",
+            "instrument_id": 2,
+            "name": "Stratocaster",
+            "brand": "Fender",
+            "price": 85000.0,
+            "strings_count": 6
+        },
+        {
+            "type": "Drum",
+            "instrument_id": 3,
+            "name": "Stage Custom Birch",
+            "brand": "Yamaha",
+            "price": 80000.0,
+            "drum_type": "Акустические"
+        },
+        {
+            "type": "Keyboard",
+            "instrument_id": 4,
+            "name": "CT-X700",
+            "brand": "Casio",
+            "price": 28000.0,
+            "keys_count": 61
+        }
+    ],
+    "customers": [
+        {
+            "customer_id": 1,
+            "name": "Полина",
+            "email": "dadaya@gmail.com",
+            "phone": "88005553535"
+        },
+        {
+            "customer_id": 2,
+            "name": "Семен",
+            "email": "oleg@bk.ru",
+            "phone": "89675206767"
+        }
+    ],
+    "orders": [
+        {
+            "order_id": 1,
+            "customer_id": 1,
+            "status": "new",
+            "total_price": 15000.0,
+            "instruments": [
+                {
+                    "type": "Guitar",
+                    "instrument_id": 1,
+                    "name": "SR300E",
+                    "brand": "Ibanez",
+                    "price": 15000.0,
+                    "strings_count": 4
+                }
+            ]
+        },
+        {
+            "order_id": 2,
+            "customer_id": 2,
+            "status": "new",
+            "total_price": 85000.0,
+            "instruments": [
+                {
+                    "type": "Guitar",
+                    "instrument_id": 2,
+                    "name": "Stratocaster",
+                    "brand": "Fender",
+                    "price": 85000.0,
+                    "strings_count": 6
+                }
+            ]
+        },
+        {
+            "order_id": 3,
+            "customer_id": 1,
+            "status": "new",
+            "total_price": 28000.0,
+            "instruments": [
+                {
+                    "type": "Keyboard",
+                    "instrument_id": 4,
+                    "name": "CT-X700",
+                    "brand": "Casio",
+                    "price": 28000.0,
+                    "keys_count": 61
+                }
+            ]
+        }
+    ]
+}

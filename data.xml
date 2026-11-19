@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<shop>
+  <instruments>
+    <instrument type="Guitar">
+      <id>1</id>
+      <name>SR300E</name>
+      <brand>Ibanez</brand>
+      <price>15000.0</price>
+    </instrument>
+    <instrument type="Guitar">
+      <id>2</id>
+      <name>Stratocaster</name>
+      <brand>Fender</brand>
+      <price>85000.0</price>
+    </instrument>
+    <instrument type="Drum">
+      <id>3</id>
+      <name>Stage Custom Birch</name>
+      <brand>Yamaha</brand>
+      <price>80000.0</price>
+    </instrument>
+    <instrument type="Keyboard">
+      <id>4</id>
+      <name>CT-X700</name>
+      <brand>Casio</brand>
+      <price>28000.0</price>
+    </instrument>
+  </instruments>
+  <customers>
+    <customer>
+      <id>1</id>
+      <name>Полина</name>
+      <email>dadaya@gmail.com</email>
+      <phone>88005553535</phone>
+    </customer>
+    <customer>
+      <id>2</id>
+      <name>Семен</name>
+      <email>oleg@bk.ru</email>
+      <phone>89675206767</phone>
+    </customer>
+  </customers>
+</shop>

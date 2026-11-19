@@ -35,6 +35,7 @@ class Instrument:
         return "Базовый инструмент"
 
     def to_dict(self) -> dict:
+        """Преобразование в словарь для JSON/XML."""
         return {
             "type": self.__class__.__name__,
             "instrument_id": self.instrument_id,
@@ -44,6 +45,7 @@ class Instrument:
         }
 
 class Guitar(Instrument):
+    """Гитара."""
     def __init__(self, instrument_id: int, name: str, brand: str, price: float, strings_count: int) -> None:
         super().__init__(instrument_id, name, brand, price)
         self.strings_count = strings_count
@@ -57,6 +59,7 @@ class Guitar(Instrument):
         return data
 
 class Drum(Instrument):
+    """Барабаны."""
     def __init__(self, instrument_id: int, name: str, brand: str, price: float, drum_type: str) -> None:
         super().__init__(instrument_id, name, brand, price)
         self.drum_type = drum_type
@@ -70,6 +73,7 @@ class Drum(Instrument):
         return data
 
 class Keyboard(Instrument):
+    """Клавишные."""
     def __init__(self, instrument_id: int, name: str, brand: str, price: float, keys_count: int) -> None:
         super().__init__(instrument_id, name, brand, price)
         self.keys_count = keys_count
@@ -133,6 +137,7 @@ class Inventory:
         self.customers: dict[int, Customer] = {}
         self.orders: dict[int, Order] = {}
 
+    # --- Инструменты ---
     def add_instrument(self, instrument: Instrument) -> None:
         if instrument.instrument_id in self.instruments:
             raise ShopError(f"Инструмент с ID {instrument.instrument_id} уже существует.")
@@ -148,11 +153,13 @@ class Inventory:
             raise ItemNotFoundError(f"Инструмент с ID {instrument_id} не найден.")
         del self.instruments[instrument_id]
 
+    # --- Покупатели ---
     def add_customer(self, customer: Customer) -> None:
         if customer.customer_id in self.customers:
             raise ShopError(f"Покупатель с ID {customer.customer_id} уже существует.")
         self.customers[customer.customer_id] = customer
 
+    # --- Заказы ---
     def create_order(self, order: Order) -> None:
         if order.customer.customer_id not in self.customers:
             raise ItemNotFoundError("Покупатель не зарегистрирован.")

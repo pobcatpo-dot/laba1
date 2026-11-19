@@ -164,3 +164,115 @@ class Inventory:
         if order.customer.customer_id not in self.customers:
             raise ItemNotFoundError("Покупатель не зарегистрирован.")
         self.orders[order.order_id] = order
+
+
+# ==========================================
+# 4. ФАЙЛОВЫЕ ОБРАБОТЧИКИ (JSON & XML)
+# ==========================================
+
+class JsonHandler:
+    """Класс для сохранения и загрузки в JSON."""
+    @staticmethod
+    def save(inventory: Inventory, filename: str = "data.json") -> None:
+        data = {
+            "instruments": [i.to_dict() for i in inventory.instruments.values()],
+            "customers": [c.to_dict() for c in inventory.customers.values()],
+            "orders": [o.to_dict() for o in inventory.orders.values()]
+        }
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
+    @staticmethod
+    def load(inventory: Inventory, filename: str = "data.json") -> None:
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            
+            for item in data.get("instruments", []):
+                if item["type"] == "Guitar":
+                    inv = Guitar(item["instrument_id"], item["name"], item["brand"], item["price"], item["strings_count"])
+                elif item["type"] == "Drum":
+                    inv = Drum(item["instrument_id"], item["name"], item["brand"], item["price"], item["drum_type"])
+                elif item["type"] == "Keyboard":
+                    inv = Keyboard(item["instrument_id"], item["name"], item["brand"], item["price"], item["keys_count"])
+                else:
+                    inv = Instrument(item["instrument_id"], item["name"], item["brand"], item["price"])
+                inventory.add_instrument(inv)
+
+            for c in data.get("customers", []):
+                inventory.add_customer(Customer(c["customer_id"], c["name"], c["email"], c["phone"]))
+
+            for o in data.get("orders", []):
+                cust = inventory.customers.get(o["customer_id"])
+                if cust:
+                    order = Order(o["order_id"], cust, o["status"])
+                    inventory.create_order(order)
+
+        except FileNotFoundError:
+            raise ShopError(f"Файл {filename} не найден.")
+        except json.JSONDecodeError:
+            raise ShopError(f"Ошибка чтения JSON файла {filename}.")
+
+
+class XmlHandler:
+    """Класс для сохранения и загрузки в XML."""
+    @staticmethod
+    def save(inventory: Inventory, filename: str = "data.xml") -> None:
+        root = ET.Element("shop")
+        
+        instruments_el = ET.SubElement(root, "instruments")
+        for inv in inventory.instruments.values():
+            inv_el = ET.SubElement(instruments_el, "instrument", type=inv.__class__.__name__)
+            ET.SubElement(inv_el, "id").text = str(inv.instrument_id)
+            ET.SubElement(inv_el, "name").text = inv.name
+            ET.SubElement(inv_el, "brand").text = inv.brand
+            ET.SubElement(inv_el, "price").text = str(inv.price)
+
+        customers_el = ET.SubElement(root, "customers")
+        for c in inventory.customers.values():
+            cust_el = ET.SubElement(customers_el, "customer")
+            ET.SubElement(cust_el, "id").text = str(c.customer_id)
+            ET.SubElement(cust_el, "name").text = c.name
+            ET.SubElement(cust_el, "email").text = c.email
+            ET.SubElement(cust_el, "phone").text = c.phone
+
+        xml_str = minidom.parseString(ET.tostring(root, encoding="utf-8")).toprettyxml(indent="  ")
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(xml_str)
+
+    @staticmethod
+    def load(inventory: Inventory, filename: str = "data.xml") -> None:
+        try:
+            tree = ET.parse(filename)
+            root = tree.getroot()
+
+            # Загрузка инструментов
+            for inv_el in root.findall("./instruments/instrument"):
+                inv_id = int(inv_el.find("id").text)
+                name = inv_el.find("name").text
+                brand = inv_el.find("brand").text
+                price = float(inv_el.find("price").text)
+                inv_type = inv_el.get("type")
+
+                if inv_type == "Guitar":
+                    inv = Guitar(inv_id, name, brand, price, 6)
+                elif inv_type == "Drum":
+                    inv = Drum(inv_id, name, brand, price, "acoustic")
+                elif inv_type == "Keyboard":
+                    inv = Keyboard(inv_id, name, brand, price, 88)
+                else:
+                    inv = Instrument(inv_id, name, brand, price)
+                inventory.add_instrument(inv)
+
+            # Загрузка покупателей
+            for cust_el in root.findall("./customers/customer"):
+                c_id = int(cust_el.find("id").text)
+                name = cust_el.find("name").text
+                email = cust_el.find("email").text
+                phone = cust_el.find("phone").text
+                inventory.add_customer(Customer(c_id, name, email, phone))
+
+        except FileNotFoundError:
+            raise ShopError(f"Файл {filename} не найден.")
+        except ET.ParseError:
+            raise ShopError(f"Ошибка парсинга XML файла {filename}.")

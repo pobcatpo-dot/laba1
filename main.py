@@ -120,3 +120,40 @@ class Order:
             "total_price": self.get_total_price(),
             "instruments": [i.to_dict() for i in self.instruments]
         }
+
+        
+# ==========================================
+# 3. УПРАВЛЕНИЕ (CRUD)
+# ==========================================
+
+class Inventory:
+    """Склад магазина (управление инструментами и заказами)."""
+    def __init__(self) -> None:
+        self.instruments: dict[int, Instrument] = {}
+        self.customers: dict[int, Customer] = {}
+        self.orders: dict[int, Order] = {}
+
+    def add_instrument(self, instrument: Instrument) -> None:
+        if instrument.instrument_id in self.instruments:
+            raise ShopError(f"Инструмент с ID {instrument.instrument_id} уже существует.")
+        self.instruments[instrument.instrument_id] = instrument
+
+    def get_instrument(self, instrument_id: int) -> Instrument:
+        if instrument_id not in self.instruments:
+            raise ItemNotFoundError(f"Инструмент с ID {instrument_id} не найден.")
+        return self.instruments[instrument_id]
+
+    def delete_instrument(self, instrument_id: int) -> None:
+        if instrument_id not in self.instruments:
+            raise ItemNotFoundError(f"Инструмент с ID {instrument_id} не найден.")
+        del self.instruments[instrument_id]
+
+    def add_customer(self, customer: Customer) -> None:
+        if customer.customer_id in self.customers:
+            raise ShopError(f"Покупатель с ID {customer.customer_id} уже существует.")
+        self.customers[customer.customer_id] = customer
+
+    def create_order(self, order: Order) -> None:
+        if order.customer.customer_id not in self.customers:
+            raise ItemNotFoundError("Покупатель не зарегистрирован.")
+        self.orders[order.order_id] = order

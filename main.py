@@ -291,12 +291,14 @@ class App:
             print("\n--- МУЗЫКАЛЬНЫЙ МАГАЗИН ---")
             print("1. Показать все инструменты")
             print("2. Добавить гитару")
-            print("3. Добавить покупателя")
-            print("4. Создать заказ")
-            print("5. Сохранить в JSON")
-            print("6. Загрузить из JSON")
-            print("7. Сохранить в XML")
-            print("8. Загрузить из XML")
+            print("3. Добавить барабаны")     
+            print("4. Добавить клавишные")    
+            print("5. Добавить покупателя")
+            print("6. Создать заказ")
+            print("7. Сохранить в JSON")
+            print("8. Загрузить из JSON")
+            print("9. Сохранить в XML")
+            print("10. Загрузить из XML")
             print("0. Выход")
             
             choice = input("Выберите действие: ")
@@ -317,7 +319,25 @@ class App:
                     self.inventory.add_instrument(Guitar(inv_id, name, brand, price, strings))
                     print("Гитара добавлена!")
                 
-                elif choice == "3":
+                elif choice == "3":  # <-- НОВОЕ (Барабаны)
+                    inv_id = int(input("ID инструмента: "))
+                    name = input("Название: ")
+                    brand = input("Бренд: ")
+                    price = float(input("Цена: "))
+                    drum_type = input("Тип барабанов (акустические/электронные): ")
+                    self.inventory.add_instrument(Drum(inv_id, name, brand, price, drum_type))
+                    print("Барабаны добавлены!")
+                
+                elif choice == "4":  # <-- НОВОЕ (Клавишные)
+                    inv_id = int(input("ID инструмента: "))
+                    name = input("Название: ")
+                    brand = input("Бренд: ")
+                    price = float(input("Цена: "))
+                    keys = int(input("Количество клавиш: "))
+                    self.inventory.add_instrument(Keyboard(inv_id, name, brand, price, keys))
+                    print("Клавишные добавлены!")
+                
+                elif choice == "5":  # <-- ТЕПЕРЬ ПОКУПАТЕЛЬ (сдвинулось с 3)
                     c_id = int(input("ID покупателя: "))
                     name = input("Имя: ")
                     email = input("Email: ")
@@ -325,7 +345,7 @@ class App:
                     self.inventory.add_customer(Customer(c_id, name, email, phone))
                     print("Покупатель добавлен!")
                 
-                elif choice == "4":
+                elif choice == "6":  # <-- ТЕПЕРЬ ЗАКАЗ (сдвинулось с 4)
                     order_id = int(input("ID заказа: "))
                     cust_id = int(input("ID покупателя: "))
                     if cust_id not in self.inventory.customers:
@@ -338,19 +358,19 @@ class App:
                     self.inventory.create_order(order)
                     print(f"Заказ создан! Сумма: {order.get_total_price()} руб.")
                 
-                elif choice == "5":
+                elif choice == "7":  # <-- БЫЛО 5
                     JsonHandler.save(self.inventory)
                     print("Сохранено в data.json")
                 
-                elif choice == "6":
+                elif choice == "8":  # <-- БЫЛО 6
                     JsonHandler.load(self.inventory)
                     print("Загружено из data.json")
                 
-                elif choice == "7":
+                elif choice == "9":  # <-- БЫЛО 7
                     XmlHandler.save(self.inventory)
                     print("Сохранено в data.xml")
                 
-                elif choice == "8":
+                elif choice == "10": # <-- БЫЛО 8
                     XmlHandler.load(self.inventory)
                     print("Загружено из data.xml")
 
@@ -361,11 +381,13 @@ class App:
                 else:
                     print("Неверная команда.")
 
-            # Обработка кастомных исключений
+            # Обработка наших кастомных исключений
             except ShopError as e:
                 print(f"Ошибка магазина: {e}")
+            # Обработка ошибок приведения типов (если ввели буквы вместо цифр)
             except ValueError:
                 print("Ошибка ввода: пожалуйста, введите число, где это требуется.")
+            # Обработка любых других непредвиденных ошибок
             except Exception as e:
                 print(f"Непредвиденная ошибка: {e}")
 
